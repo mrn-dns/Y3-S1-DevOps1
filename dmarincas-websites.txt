@@ -1,2 +1,2 @@
-http://35875b-dmarincas.s3-website-us-east-1.amazonaws.com
-http://3.90.225.150
+http://738b8e-dmarincas.s3-website-us-east-1.amazonaws.com
+http://54.198.104.203

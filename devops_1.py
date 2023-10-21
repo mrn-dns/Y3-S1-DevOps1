@@ -12,6 +12,9 @@ log_file = 'monitoring.log' #https://docs.python.org/3/howto/logging.html
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(message)s')
 
 
+keyName='key12' # Added global key variable to ease script use
+
+
 random_string = str(uuid.uuid4()).split('-')[0][:6] # Generate a random string
 
 
@@ -136,11 +139,11 @@ try:
     ec2 = boto3.resource('ec2')
 
     instance = ec2.create_instances(
-    ImageId='ami-0bb4c991fa89d4b9b',
+    ImageId='ami-03eb6185d756497f8',
     InstanceType='t2.nano',
     MinCount=1,
     MaxCount=1,
-    KeyName='key12',
+    KeyName=keyName,
     SecurityGroups=['devops'],
     UserData=user_data_script
     )
@@ -214,7 +217,7 @@ logging.info(f"EC2 Instance Website is : http://{instance_ip}")
 
 websites = [s3_website_url, ec2_website_url] # Storing URLs to a list
 
-# Writing the URLs to a file called dmarincas_websites.txt
+#--------------Created URLs and stored them at dmarincas_websites.txt---------------------
 with open('dmarincas-websites.txt', 'w') as file:
     for website in websites:
         file.write(website + '\n')
@@ -228,20 +231,20 @@ except Exception as e:
 
 #------------SSH connection and running the monitoring script---------------
 try:
-	subprocess.run("chmod 400 key12.pem", shell=True)
-	subprocess.run("scp -i key12.pem -o StrictHostKeyChecking=no monitoring.sh ec2-user@" +
+	subprocess.run("chmod 400 " + str(keyName) + ".pem", shell=True)
+	subprocess.run("scp -i " + str(keyName) + ".pem" + " -o StrictHostKeyChecking=no monitoring.sh ec2-user@" +
 	str(instance[0].public_ip_address) + ":." , shell=True)
 	print("Waiting for instance initialization")
 	logging.info("Waiting for instance initialization")
 	time.sleep(80)
 	print("scp check")
 	logging.info("scp check")
-	subprocess.run("ssh -i key12.pem -o StrictHostKeyChecking=no ec2-user@" + str(instance[0].public_ip_address) + " 'chmod 700 monitoring.sh'", shell = True)
+	subprocess.run("ssh -i "+ str(keyName) + ".pem" + " -o StrictHostKeyChecking=no ec2-user@" + str(instance[0].public_ip_address) + " 'chmod 700 monitoring.sh'", shell = True)
 	print("ssh check")
 	logging.info("ssh check")
-	subprocess.run("ssh -i key12.pem ec2-user@" + str(instance[0].public_ip_address) + " ' ./monitoring.sh'", shell = True)
+	subprocess.run("ssh -i " + str(keyName) + ".pem" + " ec2-user@" + str(instance[0].public_ip_address) + " ' ./monitoring.sh'", shell = True)
 	logging.info("Monitoring script is active.")
-	subprocess.run("ssh -i key12.pem ec2-user@" + str(instance[0].public_ip_address) + " echo '* * * * * uptime >> ~/instance_uptime.log' | crontab -", shell=True)
+	subprocess.run("ssh -i " + str(keyName) + ".pem" + " ec2-user@" + str(instance[0].public_ip_address) + " echo '* * * * * uptime >> ~/instance_uptime.log' | crontab -", shell=True)
 except Exception as e:
 	print(e)
 #------------SSH connection and running the monitoring script---------------
