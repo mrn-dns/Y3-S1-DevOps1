@@ -239,7 +239,7 @@ try:
 	time.sleep(80)
 	print("scp check")
 	logging.info("scp check")
-	subprocess.run("ssh -i "+ str(keyName) + ".pem" + " -o StrictHostKeyChecking=no ec2-user@" + str(instance[0].public_ip_address) + " 'chmod 700 monitoring.sh'", shell = True)
+	subprocess.run("ssh -i "+ str(keyName) + ".pem" + " ec2-user@" + str(instance[0].public_ip_address) + " 'chmod 700 monitoring.sh'", shell = True)
 	print("ssh check")
 	logging.info("ssh check")
 	subprocess.run("ssh -i " + str(keyName) + ".pem" + " ec2-user@" + str(instance[0].public_ip_address) + " ' ./monitoring.sh'", shell = True)
