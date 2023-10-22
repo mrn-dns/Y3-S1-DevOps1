@@ -1,2 +1,2 @@
-http://ce2d75-dmarincas.s3-website-us-east-1.amazonaws.com
-http://54.227.63.21
+http://8013e1-dmarincas.s3-website-us-east-1.amazonaws.com
+http://54.163.212.116

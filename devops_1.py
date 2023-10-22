@@ -8,9 +8,17 @@ import subprocess
 import time
 import logging
 
+#---------DYNAMIC AMI ID-----------
+#https://aws.amazon.com/blogs/compute/automatically-update-instances-in-an-amazon-ecs-cluster-using-the-ami-id-parameter/
+command = "aws ssm get-parameters --region us-east-1 --names /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id --query Parameters[0].Value --output text"
+result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) 
+image_id = result.stdout.strip()
+#---------DYNAMIC AMI ID-----------
+
+#---------LOGGING SETUP----------
 log_file = 'monitoring.log' #https://docs.python.org/3/howto/logging.html
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(message)s')
-
+#---------LOGGING SETUP----------
 
 keyName='key12' # Added global key variable to ease script use
 
@@ -35,6 +43,7 @@ yum install httpd -y
 yum install -y mariadb-server
 yum install php -y
 sudo yum install php php-mysqli -y
+
 
 systemctl enable httpd
 systemctl start httpd
@@ -139,7 +148,8 @@ try:
     ec2 = boto3.resource('ec2')
 
     instance = ec2.create_instances(
-    ImageId='ami-03eb6185d756497f8',
+    #ImageId='ami-03eb6185d756497f8',
+    ImageId=image_id,
     InstanceType='t2.nano',
     MinCount=1,
     MaxCount=1,
@@ -236,7 +246,7 @@ try:
 	str(instance[0].public_ip_address) + ":." , shell=True)
 	print("Waiting for instance initialization")
 	logging.info("Waiting for instance initialization")
-	time.sleep(80)
+	time.sleep(90)
 	print("scp check")
 	logging.info("scp check")
 	subprocess.run("ssh -i "+ str(keyName) + ".pem" + " ec2-user@" + str(instance[0].public_ip_address) + " 'chmod 700 monitoring.sh'", shell = True)

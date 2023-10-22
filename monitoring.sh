@@ -3,6 +3,8 @@
 # Some basic monitoring functionality; Tested on Amazon Linux 2.
 #
 
+sudo yum install -y sysstat > /dev/null #DOWNLOAD LIBRARY FOR CPU_USAGE(mpstat)
+
 INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
 MEMORYUSAGE=$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')
 PROCESSES=$(expr $(ps -A | grep -c .) - 1)
